@@ -32,9 +32,11 @@ class FileStorage:
     def reload(self):
         """Loads storage dictionary from file"""
         file_path = self.__file_path
+
         if path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 self.__objects = json.load(f)
+
                 for key, value in self.__objects.items():
                     extract_cls_name = value["__class__"]
                     check_cls_in_var = models.classes[extract_cls_name]
