@@ -39,4 +39,4 @@ class FileStorage:
                     extract_cls_name = value["__class__"]
                     check_cls_in_var = models.classes[extract_cls_name]
                     simple_instance = check_cls_in_var(**value)
-                    self.__objects[key] = simple_instance
+                    self.all()[key] = simple_instance
