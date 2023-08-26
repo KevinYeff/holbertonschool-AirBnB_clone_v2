@@ -2,7 +2,7 @@
 """ Console Module """
 import cmd
 import sys
-# from models.base_model import BaseModel
+
 from models.__init__ import storage, classes, dot_cmds, types
 
 
