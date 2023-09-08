@@ -2,7 +2,7 @@
 """console Test"""
 from cmd import Cmd
 from parse_functions.class_extractor import cls_extractor, commd_extractor, id_extractor
-
+from parse_functions.adv_parse_func import args_extractor
 class Testconsole(Cmd):
     """This test console will parse the command line"""
     
@@ -18,9 +18,15 @@ class Testconsole(Cmd):
             
             else:
                 if "," in parse_line:
-                    print("comma exists")
+                    cls = cls_extractor(parse_line)
+                    cmmd = commd_extractor(parse_line)
+                    cls_id = id_extractor(parse_line)
+                    parameters = args_extractor(parse_line)
+                    formatkeyfull = f"{cmmd} {cls} {cls_id} {parameters}"
+                    return formatkeyfull
+                                                   
                 else:                    
-                    if '"' in parse_line and "," not in parse_line:
+                    if '"' in parse_line:
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         cls_id = id_extractor(parse_line)
@@ -28,7 +34,6 @@ class Testconsole(Cmd):
                         return formatkey
                     
                     else:
-                        
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         formatkey = f"{cmmd} {cls}"
