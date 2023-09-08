@@ -4,7 +4,8 @@ import cmd
 import sys
 
 from models.__init__ import storage, classes, dot_cmds, types
-
+from test_console.parse_functions.class_extractor import cls_extractor, commd_extractor, id_extractor
+from test_console.parse_functions.adv_parse_func import args_extractor
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
@@ -23,50 +24,35 @@ class HBNBCommand(cmd.Cmd):
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
-        _cmd = _cls = _id = _args = ''  # initialize line elements
-
-        # scan for general formating - i.e '.', '(', ')'
-        if not ('.' in line and '(' in line and ')' in line):
-            return line
-
-        try:  # parse line left to right
-            pline = line[:]  # parsed line
-
-            # isolate <class name>
-            _cls = pline[:pline.find('.')]
-
-            # isolate and validate <command>
-            _cmd = pline[pline.find('.') + 1:pline.find('(')]
-            if _cmd not in dot_cmds:
-                raise Exception
-
-            # if parantheses contain arguments, parse them
-            pline = pline[pline.find('(') + 1:pline.find(')')]
-            if pline:
-                # partition args: (<id>, [<delim>], [<*args>])
-                pline = pline.partition(', ')  # pline convert to tuple
-
-                # isolate _id, stripping quotes
-                _id = pline[0].replace('\"', '')
-                # possible bug here:
-                # empty quotes register as empty _id when replaced
-
-                # if arguments exist beyond _id
-                pline = pline[2].strip()  # pline is now str
-                if pline:
-                    # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] == '}'\
-                            and type(eval(pline)) is dict:
-                        _args = pline
+        if "." in line:
+            parse_line = line[:]
+            if parse_line[-2] != "(" and parse_line[-1] != ")":
+                return line
+            
+            else:
+                if "," in parse_line:
+                    cls = cls_extractor(parse_line)
+                    cmmd = commd_extractor(parse_line)
+                    cls_id = id_extractor(parse_line)
+                    parameters = args_extractor(parse_line)
+                    formatkeyfull = f"{cmmd} {cls} {cls_id} {parameters}"
+                    return formatkeyfull
+                                                   
+                else:                    
+                    if '"' in parse_line:
+                        cls = cls_extractor(parse_line)
+                        cmmd = commd_extractor(parse_line)
+                        cls_id = id_extractor(parse_line)
+                        formatkey = f"{cmmd} {cls} {cls_id}"
+                        return formatkey
+                    
                     else:
-                        _args = pline.replace(',', '')
-                        # _args = _args.replace('\"', '')
-            line = ' '.join([_cmd, _cls, _id, _args])
-
-        except Exception as mess:
-            pass
-        finally:
-            return line
+                        cls = cls_extractor(parse_line)
+                        cmmd = commd_extractor(parse_line)
+                        formatkey = f"{cmmd} {cls}"
+                        return formatkey
+        
+        return line
 
     def postcmd(self, stop, line):
         """Prints if isatty is false"""
