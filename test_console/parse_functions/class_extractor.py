@@ -27,9 +27,14 @@ def id_extractor(line):
     to extract the id of the advanced command"""
     splitting = line.partition('(')
     not_id_yet = splitting[2]
-    if ")" in not_id_yet:
+    if "," not in not_id_yet:
         splitting2 = not_id_yet.split(")")
         class_id_quotes = splitting2[0]
+        class_id = class_id_quotes.strip('"')
+        return (class_id)
+    else:
+        splitting3 = not_id_yet.split(",")
+        class_id_quotes = splitting3[0]
         class_id = class_id_quotes.strip('"')
         return (class_id)
     return
