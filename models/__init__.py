@@ -15,7 +15,7 @@ classes = {
     'Review': Review
 }
 
-dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
 
 types = {
     'number_rooms': int, 'number_bathrooms': int,
