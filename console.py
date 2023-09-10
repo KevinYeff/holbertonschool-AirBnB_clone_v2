@@ -104,9 +104,15 @@ class HBNBCommand(cmd.Cmd):
                 if key in ["id", "created_at", "updated_at"]:
                     print(f"Can't change this private attribute: {key}")
                     return
+                if value.startswith('\"') and value.endswith('\"'):
+                    value = value.strip('\"')
+                if "_" in value:
+                    value = value.replace('_', ' ')
+                        
                 new_instance.__dict__.update({key: value})                   
                 new_instance.save()
                 
+            storage.save()    
             print(new_instance.id)
         
     def help_create(self):
