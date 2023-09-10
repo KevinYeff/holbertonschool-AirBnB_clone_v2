@@ -119,6 +119,9 @@ class HBNBCommand(cmd.Cmd):
                         value = int(value)
                     except ValueError:
                         pass
+                
+                if key in types:
+                    value = types[key](value)
                           
                 new_instance.__dict__.update({key: value})                   
                 new_instance.save()
