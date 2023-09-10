@@ -108,7 +108,18 @@ class HBNBCommand(cmd.Cmd):
                     value = value.strip('\"')
                 if "_" in value:
                     value = value.replace('_', ' ')
-                        
+                
+                if "." in value:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        pass
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        pass
+                          
                 new_instance.__dict__.update({key: value})                   
                 new_instance.save()
                 
