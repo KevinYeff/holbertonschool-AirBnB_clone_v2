@@ -51,3 +51,13 @@ class FileStorage:
                     simple_instance = check_cls_in_var(**value)
                     self.all()[key] = simple_instance
                     # self.__objects[key] = simple_instance
+                    
+    def delete(self, obj=None):
+        if obj is None:
+            print("** command requires a obj to delete **")
+            return
+        else:
+            for key, value in self.__objects.items():
+                if value == obj:
+                    del self.__objects[key]
+                    break
