@@ -3,10 +3,23 @@
 from uuid import uuid4
 from datetime import datetime
 import models
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DateTime
 
+Base = declarative_base()
 
 class BaseModel:
-    """A base class for all hbnb models"""
+    """A base class for all hbnb models
+    New attributes:
+    id sqlalchemy represents a column containing a string
+    created_at sqlalchemy represents a column containing a datetime
+    updated_at sqlalchemy represents a column containing a datetime"""
+    
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    
+    
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
         if kwargs:
