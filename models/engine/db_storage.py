@@ -22,7 +22,7 @@ class DBStorage():
         to the MySQL database and user created in previus tasks
         hbnb_dev and hbnb_dev_db"""
         # creating engine using the enviromental variables (retrieving values vía enviromental variables)
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}:{}/{}'.format(environ.get("HBNB_MYSQL_USER"),
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(environ.get("HBNB_MYSQL_USER"),
                                                                               environ.get("HBNB_MYSQL_PWD"),
                                                                               environ.get("HBNB_MYSQL_HOST"),
                                                                               environ.get("HBNB_MYSQL_DB")), 
@@ -46,13 +46,13 @@ class DBStorage():
             if cls is None:
                 for class_name, clase in classes.items():
                     #query all types
-                    cls_objs = self.query(clase).all()
+                    cls_objs = self.__session.query(clase).all()
                     for object in cls_objs:
                         # add the objecto to the dictionary
                         objects_dict[f"{cls.__name__}.{object.id}"] = object
             else:
                 # if there is a specific class query it
-                cls_objs = self.query(cls).all()
+                cls_objs = self.__session.query(cls).all()
                 # add the obj of the specified class to the dictionary
                 for object in cls_objs:
                     objects_dict[f"{cls.__name__}.{object.id}"] = object
