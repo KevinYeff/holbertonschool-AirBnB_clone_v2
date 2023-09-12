@@ -5,7 +5,8 @@ from os import environ
 # to create the engine
 from sqlalchemy import create_engine
 # create_engine syntaxis: [dialect]+[driver]://[username]:[password]@[host]:[port]/[database]
-
+#to delete all tables if we are in a test enviroment
+from models.base_model import Base 
 
 class DBStorage():
     """New class that represents an storage engine and has the
@@ -22,5 +23,9 @@ class DBStorage():
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}:{}/{}'.format(environ.get("HBNB_MYSQL_USER"),
                                                                               environ.get("HBNB_MYSQL_PWD"),
                                                                               environ.get("HBNB_MYSQL_HOST"),
-                                                                              environ.get("HBNB_MYSQL_DB")))
-        
+                                                                              environ.get("HBNB_MYSQL_DB")), 
+                                      pool_pre_ping=True)
+        #avoiding te accidental elimination of data in a production or dev enviroment
+        if 'HBNB_ENV' == 'test':
+            Base.metadata.drop_all()
+            
