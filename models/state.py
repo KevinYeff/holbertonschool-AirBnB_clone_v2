@@ -26,6 +26,8 @@ class State(BaseModel):
     @property
     def cities(self):
         """Getter attribute that returns a list of city instances """
+        # storage variableimported
+        from models import storage
         #implement an empty list
         city_lsit = []
         # iterate through the City instances
