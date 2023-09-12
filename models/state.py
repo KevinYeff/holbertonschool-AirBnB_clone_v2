@@ -22,8 +22,17 @@ class State(BaseModel):
     #for dbstorage relationship
     cities = relationship("City", backref="state", cascade="delete")
     
-    # getter attribute whe filestorage is used instead of dbstorage
+    # getter attribute when filestorage is used instead of dbstorage
     @property
     def cities(self):
-        """No documentation yet"""
-        return []    
+        """Getter attribute that returns a list of city instances """
+        #implement an empty list
+        city_lsit = []
+        # iterate through the City instances
+        for city in storage.all(City).values():
+            #in the previous task we update the state_id (class attribute)
+            if city.state_id == self.id:
+                # Add cities that are related to state (current) to the list
+                city_lsit.append(city)
+        # return that list        
+        return city_lsit    
