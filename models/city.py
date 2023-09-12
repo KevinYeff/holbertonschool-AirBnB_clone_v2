@@ -14,6 +14,6 @@ class City(BaseModel, Base):
     # new class attribute:
     __tablename__ = "cities"
     # attributes order changed
-    name = Column(String(128), nullalble=False)
+    name = Column(String(128), nullable=False)
     state_id = Column(String(60), ForeignKey("state.id"), nullable=False,)
     
