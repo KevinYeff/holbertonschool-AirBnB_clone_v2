@@ -10,7 +10,7 @@ from models.base_model import Base
 # retrieving all the classes
 from models import classes
 
-class DBStorage():
+class DBStorage:
     """New class that represents an storage engine and has the
     following attributes"""
     __engine = None
