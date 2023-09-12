@@ -26,6 +26,6 @@ class DBStorage():
                                                                               environ.get("HBNB_MYSQL_DB")), 
                                       pool_pre_ping=True)
         #avoiding te accidental elimination of data in a production or dev enviroment
-        if 'HBNB_ENV' == 'test':
+        if environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all()
             
