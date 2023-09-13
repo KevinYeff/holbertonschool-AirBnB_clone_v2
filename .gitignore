@@ -3,3 +3,4 @@ venv/
 __pycache__/
 test_console/parse_functions/__pycache__/
 *.json
+myenv/
