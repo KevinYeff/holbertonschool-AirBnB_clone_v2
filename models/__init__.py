@@ -8,6 +8,7 @@ from .city import City
 from .amenity import Amenity
 from .place import Place
 from .review import Review
+from os import environ
 
 classes = {
     'BaseModel': BaseModel, 'User': User, 'Place': Place,
@@ -23,5 +24,10 @@ types = {
     'latitude': float, 'longitude': float
 }
 
-storage = FileStorage()
+if environ.get("HBNB_TYPE_STORAGE") == "db":
+    from models.engine.db_storage import DBStorage
+    storage = DBStorage()
+else:
+    storage = FileStorage()
+
 storage.reload()
