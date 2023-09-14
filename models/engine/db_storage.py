@@ -11,7 +11,13 @@ from models.base_model import Base
 # retrieving all the classes
 # to create the current db session
 from sqlalchemy.orm import sessionmaker, scoped_session
-
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
 
 class DBStorage:
     """New class that represents an storage engine and has the
@@ -39,15 +45,7 @@ class DBStorage:
     def all(self, cls=None):
         """Retrieves objects from the database based on the class name provided.
         Returns a dictionary just like Filestorage"""
-        classes = {
-            'BaseModel': BaseModel,
-            'User': User,
-            'Place': Place,
-            'State': State,
-            'City': City,
-            'Amenity': Amenity,
-            'Review': Review
-        }
+        classes = [BaseModel, User, Place, State, City, Amenity, Review]
 
         # empty dict to store the objects
         objects_dict = {}
@@ -59,18 +57,25 @@ class DBStorage:
 
         # quering all types of objects when no class is passed
         if cls is None:
-            for class_name, clase in classes.items():
+            for clase in classes.items():
                 # query all types
                 cls_objs = self.__session.query(clase).all()
-                for object in cls_objs:
+                for ob in cls_objs:
+                    #del object._sa_instance_state doesn't work
+                    #clean_ob = object.to_dict() doesn't work
                     # add the objecto to the dictionary
-                    objects_dict[f"{cls.__name__}.{object.id}"] = object
+                    #ob.pop("_sa_instance_state", None) doesn't work
+                    objects_dict[f"{cls.__name__}.{object.id}"] = ob
         else:
             # if there is a specific class query it
             cls_objs = self.__session.query(cls).all()
             # add the obj of the specified class to the dictionary
-            for object in cls_objs:
-                objects_dict[f"{cls.__name__}.{object.id}"] = object
+            for ob in cls_objs:
+                #del object._sa_instance_state doesn't work
+                #clean_ob = object.to_dict() doesn't work
+                # add the objecto to the dictionary
+                #ob.pop("_sa_instance_state", None) doesn't work
+                objects_dict[f"{cls.__name__}.{object.id}"] = ob
 
         # return the dictionary
         return objects_dict
@@ -105,4 +110,8 @@ class DBStorage:
         safe_session = scoped_session(new_session)
         # make sure the session is secure
         self.__session = safe_session()
+        
+    def close(self):
+        """Closes the current session"""
+        self.__session.close()
         
