@@ -81,3 +81,9 @@ class DBStorage:
             session so this will persist the objects in the database"""
             self.__session.commit()
             
+        def delete(self, obj):
+            """This method will delete an object from the current session.
+            This method also marks the object for deletion in the database
+            when a commit() is performed"""
+            self.__session.delete(obj)
+            
