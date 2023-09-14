@@ -76,3 +76,8 @@ class DBStorage:
             (self.__session)"""
             self.__session.add(obj)
             
+        def save(self):
+            """This method will save the changes to te objects in the current 
+            session so this will persist the objects in the database"""
+            self.__session.commit()
+            
