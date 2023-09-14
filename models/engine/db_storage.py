@@ -36,70 +36,71 @@ class DBStorage:
         if environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all()
 
-        def all(self, cls=None):
-            """Retrieves objects from the database based on the class name provided.
-            Returns a dictionary just like Filestorage"""
-            classes = {
-                'BaseModel': BaseModel,
-                'User': User,
-                'Place': Place,
-                'State': State,
-                'City': City,
-                'Amenity': Amenity,
-                'Review': Review
-            }
+    def all(self, cls=None):
+        """Retrieves objects from the database based on the class name provided.
+        Returns a dictionary just like Filestorage"""
+        classes = {
+            'BaseModel': BaseModel,
+            'User': User,
+            'Place': Place,
+            'State': State,
+            'City': City,
+            'Amenity': Amenity,
+            'Review': Review
+        }
 
-            # empty dict to store the objects
-            objects_dict = {}
+        # empty dict to store the objects
+        objects_dict = {}
 
-            # make sure that we are in a database session
-            if self.__session is None:
-                print("** no session established **")
-                return {}
+        # make sure that we are in a database session
+        if self.__session is None:
+            print("** no session established **")
+            return {}
 
-            # quering all types of objects when no class is passed
-            if cls is None:
-                for class_name, clase in classes.items():
-                    # query all types
-                    cls_objs = self.__session.query(clase).all()
-                    for object in cls_objs:
-                        # add the objecto to the dictionary
-                        objects_dict[f"{cls.__name__}.{object.id}"] = object
-            else:
-                # if there is a specific class query it
-                cls_objs = self.__session.query(cls).all()
-                # add the obj of the specified class to the dictionary
+        # quering all types of objects when no class is passed
+        if cls is None:
+            for class_name, clase in classes.items():
+                # query all types
+                cls_objs = self.__session.query(clase).all()
                 for object in cls_objs:
+                    # add the objecto to the dictionary
                     objects_dict[f"{cls.__name__}.{object.id}"] = object
+        else:
+            # if there is a specific class query it
+            cls_objs = self.__session.query(cls).all()
+            # add the obj of the specified class to the dictionary
+            for object in cls_objs:
+                objects_dict[f"{cls.__name__}.{object.id}"] = object
 
-            # return the dictionary
-            return objects_dict
-        def new(self, obj):
-            """This method will add the object to the current database session
-            (self.__session)"""
-            self.__session.add(obj)
-            
-        def save(self):
-            """This method will save the changes to te objects in the current 
-            session so this will persist the objects in the database"""
-            self.__session.commit()
-            
-        def delete(self, obj):
-            """This method will delete an object from the current session.
-            This method also marks the object for deletion in the database
-            when a commit() is performed"""
-            self.__session.delete(obj)
-            
-        def reload(self):
-            """Creates all the tables in the database and creates the current
-            database session"""
-            #Create all tables in the database session
-            Base.metadata.create_all(self.__engine)
-            #creating the current session using and bind to the engine
-            #Set the parameter expire_on_commit to False
-            new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
-            # we need to make sure that our session is thread-safe
-            #and make sure that every subprocess works with it's own
-            #session instance.
-            safe_session = scoped_session(new_session)
+        # return the dictionary
+        return objects_dict
+    
+    def new(self, obj):
+        """This method will add the object to the current database session
+        (self.__session)"""
+        self.__session.add(obj)
+        
+    def save(self):
+        """This method will save the changes to te objects in the current 
+        session so this will persist the objects in the database"""
+        self.__session.commit()
+        
+    def delete(self, obj):
+        """This method will delete an object from the current session.
+        This method also marks the object for deletion in the database
+        when a commit() is performed"""
+        self.__session.delete(obj)
+        
+    def reload(self):
+        """Creates all the tables in the database and creates the current
+        database session"""
+        #Create all tables in the database session
+        Base.metadata.create_all(self.__engine)
+        #creating the current session using and bind to the engine
+        #Set the parameter expire_on_commit to False
+        new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        # we need to make sure that our session is thread-safe
+        #and make sure that every subprocess works with it's own
+        #session instance.
+        safe_session = scoped_session(new_session)
         
