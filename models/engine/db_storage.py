@@ -6,8 +6,11 @@ from os import environ
 from sqlalchemy import create_engine
 # create_engine syntaxis: [dialect]+[driver]://[username]:[password]@[host]:[port]/[database]
 # to delete all tables if we are in a test enviroment
+# to create all tables based on engine
 from models.base_model import Base
 # retrieving all the classes
+# to create the current db session
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 class DBStorage:
@@ -87,3 +90,16 @@ class DBStorage:
             when a commit() is performed"""
             self.__session.delete(obj)
             
+        def reload(self):
+            """Creates all the tables in the database and creates the current
+            database session"""
+            #Create all tables in the database session
+            Base.metadata.create_all(self.__engine)
+            #creating the current session using and bind to the engine
+            #Set the parameter expire_on_commit to False
+            new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+            # we need to make sure that our session is thread-safe
+            #and make sure that every subprocess works with it's own
+            #session instance.
+            safe_session = scoped_session(new_session)
+        
