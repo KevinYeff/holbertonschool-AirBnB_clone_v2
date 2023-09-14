@@ -103,4 +103,6 @@ class DBStorage:
         #and make sure that every subprocess works with it's own
         #session instance.
         safe_session = scoped_session(new_session)
+        # make sure the session is secure
+        self.__session = safe_session()
         
