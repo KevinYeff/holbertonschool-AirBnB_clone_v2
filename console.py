@@ -15,17 +15,16 @@ from models.review import Review
 import models
 
 
-
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
-    
+
     classes = {
-    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-    'State': State, 'City': City, 'Amenity': Amenity,
-    'Review': Review
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
     }
 
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
@@ -51,7 +50,7 @@ class HBNBCommand(cmd.Cmd):
             parse_line = line[:]
             if parse_line[-2] != "(" and parse_line[-1] != ")":
                 return line
-            
+
             else:
                 if "," in parse_line:
                     cls = cls_extractor(parse_line)
@@ -60,21 +59,21 @@ class HBNBCommand(cmd.Cmd):
                     parameters = args_extractor(parse_line)
                     formatkeyfull = f"{cmmd} {cls} {cls_id} {parameters}"
                     return formatkeyfull
-                                                   
-                else:                    
+
+                else:
                     if '"' in parse_line:
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         cls_id = id_extractor(parse_line)
                         formatkey = f"{cmmd} {cls} {cls_id}"
                         return formatkey
-                    
+
                     else:
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         formatkey = f"{cmmd} {cls}"
                         return formatkey
-        
+
         return line
 
     def postcmd(self, stop, line):
@@ -110,48 +109,50 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        elif parameters[0] not in self.classes:
+
+        if parameters[0] not in self.classes:
             print("** class doesn't exist **")
             return
+
         else:
             new_instance = self.classes[parameters[0]]()
-                        
+
             for parameter in parameters[1:]:
                 if "=" not in parameter:
-                    print(f"Invalid paramter format: {parameter}")
+                    print(f"Invalid parameter format: {parameter}")
                     continue
-                parameter = parameter.partition("=")
+                parameter = list(parameter.partition('='))
+
                 key = parameter[0]
-                value = parameter[2]                
-                
+                value = parameter[2]
+
                 if key in ["id", "created_at", "updated_at"]:
                     print(f"Can't change this private attribute: {key}")
                     return
+
                 if value.startswith('\"') and value.endswith('\"'):
                     value = value.strip('\"')
+
                 if "_" in value:
                     value = value.replace('_', ' ')
-                
-                if "." in value:
-                    try:
+
+                try:
+                    if "." in value:
                         value = float(value)
-                    except ValueError:
-                        pass
-                else:
-                    try:
+                    else:
                         value = int(value)
-                    except ValueError:
-                        pass
-                
+                except ValueError:
+                    pass
+
                 if key in self.types:
                     value = self.types[key](value)
-                          
-                new_instance.__dict__.update({key: value})                   
-                new_instance.save()
-                
-            models.storage.save()    
-            print(new_instance.id)
-        
+
+                new_instance.__dict__.update({key: value})
+
+        new_instance.save()
+        models.storage.save()
+        print(new_instance.id)
+
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
