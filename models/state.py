@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 from os import environ
 
 
-class State(BaseModel):
+class State(BaseModel, Base):
     """ State class 
     update: now will have new attributes to link to 
     a MySQL table"""
