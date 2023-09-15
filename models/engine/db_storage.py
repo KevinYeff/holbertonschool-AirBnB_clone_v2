@@ -45,7 +45,7 @@ class DBStorage:
     def all(self, cls=None):
         """Retrieves objects from the database based on the class name provided.
         Returns a dictionary just like Filestorage"""
-        classes = [BaseModel, User, Place, State, City, Amenity, Review]
+        classes = [State, City]
 
         # empty dict to store the objects
         objects_dict = {}
@@ -57,25 +57,25 @@ class DBStorage:
 
         # quering all types of objects when no class is passed
         if cls is None:
-            for clase in classes.items():
+            for clase in classes:
                 # query all types
                 cls_objs = self.__session.query(clase).all()
                 for ob in cls_objs:
-                    #del object._sa_instance_state doesn't work
+                    del ob._sa_instance_state#doesn't work
                     #clean_ob = object.to_dict() doesn't work
                     # add the objecto to the dictionary
                     #ob.pop("_sa_instance_state", None) doesn't work
-                    objects_dict[f"{cls.__name__}.{object.id}"] = ob
+                    objects_dict[f"{type(cls).__name__}.{ob.id}"] = ob
         else:
             # if there is a specific class query it
             cls_objs = self.__session.query(cls).all()
             # add the obj of the specified class to the dictionary
             for ob in cls_objs:
-                #del object._sa_instance_state doesn't work
+                del ob._sa_instance_state #doesn't work
                 #clean_ob = object.to_dict() doesn't work
                 # add the objecto to the dictionary
                 #ob.pop("_sa_instance_state", None) doesn't work
-                objects_dict[f"{cls.__name__}.{object.id}"] = ob
+                objects_dict[f"{type(cls).__name__}.{ob.id}"] = ob
 
         # return the dictionary
         return objects_dict
