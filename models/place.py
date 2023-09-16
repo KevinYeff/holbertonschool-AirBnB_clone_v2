@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, ForeignKey, Integer, Float, Table
 #update relationship
 from sqlalchemy.orm import relationship
 from os import environ
+from models import storage
 
 place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60), ForeignKey("places.id"), 
@@ -33,10 +34,23 @@ class Place(BaseModel, Base):
     amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
     
     if environ.get('HBNB_TYPE_STORAGE') != 'db':
+        """ Attributes before update: A place to stay 
+        update: Attributes restored"""
+        city_id = ""
+        user_id = ""
+        name = ""
+        description = ""
+        number_rooms = 0
+        number_bathrooms = 0
+        max_guest = 0
+        price_by_night = 0
+        latitude = 0.0
+        longitude = 0.0
+        amenity_ids = []
         
         @property
         def reviews(self):
-            from models import storage
+            
             from models.review import Review
             
             review_objs = []
@@ -45,17 +59,13 @@ class Place(BaseModel, Base):
                     review_objs.append(review)
             return review_objs
         
+        #new getter and setter attributes
+        @property
+        def amenities(self):
+            from models.amenity import Amenity
+            amenity_objs = []
+            for amenity in storage.all(Amenity).values():
+                if amenity.place_id == self.amenity_ids:
+                    amenity_objs.append(amenity)
+            return amenity_objs
                 
-""" Attributes before update: A place to stay 
-city_id = ""
-user_id = ""
-name = ""
-description = ""
-number_rooms = 0
-number_bathrooms = 0
-max_guest = 0
-price_by_night = 0
-latitude = 0.0
-longitude = 0.0
-amenity_ids = []
-"""
