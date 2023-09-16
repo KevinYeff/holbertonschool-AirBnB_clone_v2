@@ -45,7 +45,7 @@ class DBStorage:
     def all(self, cls=None):
         """Retrieves objects from the database based on the class name provided.
         Returns a dictionary just like Filestorage"""
-        classes = [State, City, User]
+        classes = [State, City, User, Place]
 
         # empty dict to store the objects
         objects_dict = {}
