@@ -3,15 +3,37 @@
 import cmd
 import sys
 
-from models.__init__ import storage, classes, dot_cmds, types
 from test_console.parse_functions.class_extractor import cls_extractor, commd_extractor, id_extractor
 from test_console.parse_functions.adv_parse_func import args_extractor
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+import models
+
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
+
+    classes = {
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
+
+    dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
+
+    types = {
+        'number_rooms': int, 'number_bathrooms': int,
+        'max_guest': int, 'price_by_night': int,
+        'latitude': float, 'longitude': float
+    }
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -28,7 +50,7 @@ class HBNBCommand(cmd.Cmd):
             parse_line = line[:]
             if parse_line[-2] != "(" and parse_line[-1] != ")":
                 return line
-            
+
             else:
                 if "," in parse_line:
                     cls = cls_extractor(parse_line)
@@ -37,21 +59,21 @@ class HBNBCommand(cmd.Cmd):
                     parameters = args_extractor(parse_line)
                     formatkeyfull = f"{cmmd} {cls} {cls_id} {parameters}"
                     return formatkeyfull
-                                                   
-                else:                    
+
+                else:
                     if '"' in parse_line:
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         cls_id = id_extractor(parse_line)
                         formatkey = f"{cmmd} {cls} {cls_id}"
                         return formatkey
-                    
+
                     else:
                         cls = cls_extractor(parse_line)
                         cmmd = commd_extractor(parse_line)
                         formatkey = f"{cmmd} {cls}"
                         return formatkey
-        
+
         return line
 
     def postcmd(self, stop, line):
@@ -87,48 +109,50 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        elif parameters[0] not in classes:
+
+        if parameters[0] not in self.classes:
             print("** class doesn't exist **")
             return
+
         else:
-            new_instance = classes[parameters[0]]()
-                        
+            new_instance = self.classes[parameters[0]]()
+
             for parameter in parameters[1:]:
                 if "=" not in parameter:
-                    print(f"Invalid paramter format: {parameter}")
+                    print(f"Invalid parameter format: {parameter}")
                     continue
-                parameter = parameter.partition("=")
+                parameter = list(parameter.partition('='))
+
                 key = parameter[0]
-                value = parameter[2]                
-                
+                value = parameter[2]
+
                 if key in ["id", "created_at", "updated_at"]:
                     print(f"Can't change this private attribute: {key}")
                     return
+
                 if value.startswith('\"') and value.endswith('\"'):
                     value = value.strip('\"')
+
                 if "_" in value:
                     value = value.replace('_', ' ')
-                
-                if "." in value:
-                    try:
+
+                try:
+                    if "." in value:
                         value = float(value)
-                    except ValueError:
-                        pass
-                else:
-                    try:
+                    else:
                         value = int(value)
-                    except ValueError:
-                        pass
-                
-                if key in types:
-                    value = types[key](value)
-                          
-                new_instance.__dict__.update({key: value})                   
-                new_instance.save()
-                
-            storage.save()    
-            print(new_instance.id)
-        
+                except ValueError:
+                    pass
+
+                if key in self.types:
+                    value = self.types[key](value)
+
+                new_instance.__dict__.update({key: value})
+
+        new_instance.save()
+        models.storage.save()
+        print(new_instance.id)
+
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
@@ -148,7 +172,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if c_name not in classes:
+        if c_name not in self.classes:
             print("** class doesn't exist **")
             return
 
@@ -158,7 +182,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(models.storage._FileStorage__objects[key])
         except KeyError:
             print("** no instance found **")
 
@@ -179,7 +203,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if c_name not in classes:
+        if c_name not in self.classes:
             print("** class doesn't exist **")
             return
 
@@ -190,8 +214,8 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
-            storage.save()
+            del (models.storage.all()[key])
+            models.storage.save()
         except KeyError:
             print("** no instance found **")
 
@@ -202,21 +226,18 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
-        print_list = []
-
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in classes:
-                print("** class doesn't exist **")
-                return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+        from models import storage
+        instances = storage.all()
+        if not args:
+            for values in instances.values():
+                print([str(values)])
+        elif args in self.classes:
+            for values in instances.values():
+                if isinstance(values, BaseModel)\
+                        and values.__class__ == self.classes[args]:
+                    print([str(values)])
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
-
-        print(print_list)
+            print("** class doesn't exist **")
 
     def help_all(self):
         """ Help information for the all command """
@@ -226,7 +247,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage._FileStorage__objects.items():
+        for k, v in models.storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
@@ -246,7 +267,7 @@ class HBNBCommand(cmd.Cmd):
         else:  # class name not present
             print("** class name missing **")
             return
-        if c_name not in classes:  # class name invalid
+        if c_name not in models.classes:  # class name invalid
             print("** class doesn't exist **")
             return
 
@@ -262,7 +283,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         # determine if key is present
-        if key not in storage.all():
+        if key not in models.storage.all():
             print("** no instance found **")
             return
 
@@ -296,7 +317,7 @@ class HBNBCommand(cmd.Cmd):
             args = [att_name, att_val]
 
         # retrieve dictionary of current objects
-        new_dict = storage.all()[key]
+        new_dict = models.storage.all()[key]
 
         # iterate through attr names and values
         for i, att_name in enumerate(args):
@@ -310,8 +331,8 @@ class HBNBCommand(cmd.Cmd):
                     print("** value missing **")
                     return
                 # type cast as necessary
-                if att_name in types:
-                    att_val = types[att_name](att_val)
+                if att_name in self.types:
+                    att_val = self.types[att_name](att_val)
 
                 # update dictionary with name, value pair
                 new_dict.__dict__.update({att_name: att_val})

@@ -3,7 +3,13 @@
 import json
 import models
 from os import path
-
+from models.base_model import BaseModel
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
@@ -40,6 +46,15 @@ class FileStorage:
         """Loads storage dictionary from file"""
         file_path = self.__file_path
         temp_dict = {}
+        classes = {
+            'BaseModel': BaseModel,
+            'User': User,
+            'Place': Place,
+            'State': State,
+            'City': City,
+            'Amenity': Amenity,
+            'Review': Review
+        }
 
         if path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -47,7 +62,7 @@ class FileStorage:
 
                 for key, value in temp_dict.items():
                     extract_cls_name = value["__class__"]
-                    check_cls_in_var = models.classes[extract_cls_name]
+                    check_cls_in_var = classes[extract_cls_name]
                     simple_instance = check_cls_in_var(**value)
                     self.all()[key] = simple_instance
                     # self.__objects[key] = simple_instance
