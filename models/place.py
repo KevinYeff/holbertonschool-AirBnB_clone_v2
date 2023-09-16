@@ -2,6 +2,9 @@
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Float
+#update relationship
+from sqlalchemy.orm import relationship
+from os import environ
 
 class Place(BaseModel, Base):
     """Defines a Place Class, that has the new following attributes"""
@@ -16,18 +19,32 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    #Update: add class attribute
+    reviews = relationship("Review", backref="place", cascade="all")
     
-    
-    """ Attributes before update: A place to stay 
-    city_id = ""
-    user_id = ""
-    name = ""
-    description = ""
-    number_rooms = 0
-    number_bathrooms = 0
-    max_guest = 0
-    price_by_night = 0
-    latitude = 0.0
-    longitude = 0.0
-    amenity_ids = []
-    """
+    if environ.get('HBNB_TYPE_STORAGE') != 'db':
+        
+        @property
+        def reviews(self):
+            from models import storage
+            from models.review import Review
+            
+            review_objs = []
+            for review in storage.all(Review).values():
+                if review.place_id == self.id:
+                    review_objs.append(review)
+            return review_objs
+                
+""" Attributes before update: A place to stay 
+city_id = ""
+user_id = ""
+name = ""
+description = ""
+number_rooms = 0
+number_bathrooms = 0
+max_guest = 0
+price_by_night = 0
+latitude = 0.0
+longitude = 0.0
+amenity_ids = []
+"""
