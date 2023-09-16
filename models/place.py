@@ -1,10 +1,18 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Integer, Float
+from sqlalchemy import Column, String, ForeignKey, Integer, Float, Table
 #update relationship
 from sqlalchemy.orm import relationship
 from os import environ
+
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60), ForeignKey("places.id"), 
+                             primary_key=True,
+                             nullable=False),
+                      Column("amenity_id", String(60),
+                             primary_key=True,
+                             nullable=False))
 
 class Place(BaseModel, Base):
     """Defines a Place Class, that has the new following attributes"""
@@ -21,6 +29,8 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=False)
     #Update: add class attribute
     reviews = relationship("Review", backref="place", cascade="all")
+    #Update: new class attribute
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
     
     if environ.get('HBNB_TYPE_STORAGE') != 'db':
         
@@ -34,6 +44,7 @@ class Place(BaseModel, Base):
                 if review.place_id == self.id:
                     review_objs.append(review)
             return review_objs
+        
                 
 """ Attributes before update: A place to stay 
 city_id = ""
