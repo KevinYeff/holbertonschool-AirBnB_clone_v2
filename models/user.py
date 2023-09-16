@@ -13,7 +13,8 @@ class User(BaseModel, Base):
     first_name= Column(String(128), nullable=False)
     last_name = Column(String(128), nullable=False)    
     places = relationship("Place", backref="user", cascade="all")
-    
+    #update: add class attribute
+    reviews = relationship("Review", backref="user", cascade="all")
     """Attributes before update. This class defines a user by various attributes
     email = ''
     password = ''
