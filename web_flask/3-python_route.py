@@ -26,7 +26,10 @@ def c_route(text):
     format_to_display = f"C {parsed_text}"
     return format_to_display
 
+# https://juncotic.com/manejo-de-rutas-en-flask/
 
+
+@app.route("/python/", strict_slashes=False)
 @app.route("/python/<text>", strict_slashes=False)
 def py_route(text="is cool"):
     """This method recieves a text and parses
