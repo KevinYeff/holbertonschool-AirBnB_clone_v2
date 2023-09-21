@@ -76,3 +76,8 @@ class FileStorage:
                 if value == obj:
                     del self.__objects[key]
                     break
+    
+    def close(self):
+        """This method deserialices the json file to objects
+        by calling the reload() method"""
+        self.reload()
