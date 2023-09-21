@@ -68,6 +68,8 @@ class FileStorage:
                     # self.__objects[key] = simple_instance
                     
     def delete(self, obj=None):
+        """This method deletes an object if it is passed
+        otherwise returns"""
         if obj is None:
             # print("** command requires an obj to delete **")
             return
