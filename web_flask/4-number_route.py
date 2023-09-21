@@ -45,7 +45,7 @@ def py_route(text="is cool"):
 
 @app.route("/number/<int:n>", strict_slashes=False)
 def number(n):
-    """This method will display n is a number 
+    """This method will display n is a number
     only if n is an integer"""
     parsed_number = n
     format_to_display = f"{parsed_number} is a number"
