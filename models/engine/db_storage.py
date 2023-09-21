@@ -19,6 +19,7 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 
+
 class DBStorage:
     """New class that represents an storage engine and has the
     following attributes"""
@@ -46,9 +47,9 @@ class DBStorage:
         """Retrieves objects from the database based on the class name provided.
         Returns a dictionary just like Filestorage"""
         classes = [State, City, User, Place, Review, Amenity]
-        
-        if cls not in classes:
-            print("** Class doesn't exist **")
+
+        # if cls not in classes:
+        #    print("** Class doesn't exist **")
 
         # empty dict to store the objects
         objects_dict = {}
@@ -64,57 +65,56 @@ class DBStorage:
                 # query all types
                 cls_objs = self.__session.query(clase).all()
                 for ob in cls_objs:
-                    del ob._sa_instance_state#doesn't work
-                    #clean_ob = object.to_dict() doesn't work
+                    del ob._sa_instance_state  # doesn't work
+                    # clean_ob = object.to_dict() doesn't work
                     # add the objecto to the dictionary
-                    #ob.pop("_sa_instance_state", None) doesn't work
+                    # ob.pop("_sa_instance_state", None) doesn't work
                     objects_dict[f"{type(cls).__name__}.{ob.id}"] = ob
         else:
             # if there is a specific class query it
             cls_objs = self.__session.query(cls).all()
             # add the obj of the specified class to the dictionary
             for ob in cls_objs:
-                del ob._sa_instance_state #doesn't work
-                #clean_ob = object.to_dict() doesn't work
+                del ob._sa_instance_state  # doesn't work
+                # clean_ob = object.to_dict() doesn't work
                 # add the objecto to the dictionary
-                #ob.pop("_sa_instance_state", None) doesn't work
+                # ob.pop("_sa_instance_state", None) doesn't work
                 objects_dict[f"{type(cls).__name__}.{ob.id}"] = ob
 
         # return the dictionary
         return objects_dict
-    
+
     def new(self, obj):
         """This method will add the object to the current database session
         (self.__session)"""
         self.__session.add(obj)
-        
+
     def save(self):
         """This method will save the changes to te objects in the current 
         session so this will persist the objects in the database"""
         self.__session.commit()
-        
+
     def delete(self, obj):
         """This method will delete an object from the current session.
         This method also marks the object for deletion in the database
         when a commit() is performed"""
         self.__session.delete(obj)
-        
+
     def reload(self):
         """Creates all the tables in the database and creates the current
         database session"""
-        #Create all tables in the database session
+        # Create all tables in the database session
         Base.metadata.create_all(self.__engine)
-        #creating the current session using and bind to the engine
-        #Set the parameter expire_on_commit to False
+        # creating the current session using and bind to the engine
+        # Set the parameter expire_on_commit to False
         new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         # we need to make sure that our session is thread-safe
-        #and make sure that every subprocess works with it's own
-        #session instance.
+        # and make sure that every subprocess works with it's own
+        # session instance.
         safe_session = scoped_session(new_session)
         # make sure the session is secure
         self.__session = safe_session()
-        
+
     def close(self):
         """Closes the current session"""
         self.__session.close()
-        
