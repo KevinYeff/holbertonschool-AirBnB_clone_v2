@@ -69,7 +69,7 @@ class FileStorage:
                     
     def delete(self, obj=None):
         if obj is None:
-            print("** command requires an obj to delete **")
+            # print("** command requires an obj to delete **")
             return
         else:
             for key, value in self.__objects.items():
