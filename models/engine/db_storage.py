@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from models.base_model import Base
 # retrieving all the classes
 # to create the current db session
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import scoped_session, sessionmaker
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -107,11 +107,11 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         # creating the current session using and bind to the engine
         # Set the parameter expire_on_commit to False
-        new_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         # we need to make sure that our session is thread-safe
         # and make sure that every subprocess works with it's own
         # session instance.
-        Session = scoped_session(new_session)
+        Session = scoped_session(session_factory)
         # make sure the session is secure
         self.__session = Session()
 
