@@ -111,9 +111,9 @@ class DBStorage:
         # we need to make sure that our session is thread-safe
         # and make sure that every subprocess works with it's own
         # session instance.
-        safe_session = scoped_session(new_session)
+        Session = scoped_session(new_session)
         # make sure the session is secure
-        self.__session = safe_session()
+        self.__session = Session()
 
     def close(self):
         """Closes the current session"""
