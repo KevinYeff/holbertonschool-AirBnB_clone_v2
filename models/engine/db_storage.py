@@ -18,6 +18,7 @@ from models.city import City
 from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
+from sqlalchemy.orm import session
 
 
 class DBStorage:
@@ -111,9 +112,9 @@ class DBStorage:
         # we need to make sure that our session is thread-safe
         # and make sure that every subprocess works with it's own
         # session instance.
-        Session = scoped_session(session_factory)
+        session.Session = scoped_session(session_factory)
         # make sure the session is secure
-        self.__session = Session()
+        self.__session = session.Session()
 
     def close(self):
         """Closes the current session"""
