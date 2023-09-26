@@ -41,9 +41,10 @@ class State(BaseModel, Base):
             city_list = []
             # iterate through the City instances
             for city in storage.all(City).values():
-                #in the previous task we update the state_id (class attribute)
+                # in the previous task we update the state_id (class attribute)
                 if city.state_id == self.id:
-                    # Add cities that are related to state (current) to the list
+                    # Add cities that are related to state (current)
+                    # to the list
                     city_list.append(city)
             # return that list
             return city_list
