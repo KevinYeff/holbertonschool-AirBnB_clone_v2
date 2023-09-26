@@ -11,6 +11,7 @@ from models.review import Review
 from models.state import State
 from models.user import User
 
+
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
@@ -66,7 +67,7 @@ class FileStorage:
                     simple_instance = check_cls_in_var(**value)
                     self.all()[key] = simple_instance
                     # self.__objects[key] = simple_instance
-                    
+
     def delete(self, obj=None):
         """This method deletes an object if it is passed
         otherwise returns"""
@@ -78,7 +79,7 @@ class FileStorage:
                 if value == obj:
                     del self.__objects[key]
                     break
-    
+
     def close(self):
         """This method deserialices the json file to objects
         by calling the reload() method"""
