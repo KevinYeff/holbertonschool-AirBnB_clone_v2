@@ -4,7 +4,7 @@
 from os import environ
 # to create the engine
 from sqlalchemy import create_engine
-# create_engine syntaxis: [dialect]+[driver]://[username]:[password]@[host]:[port]/[database]
+# syntaxis: [dialect]+[driver]://[username]:[password]@[host]:[database]
 # to delete all tables if we are in a test enviroment
 # to create all tables based on engine
 from models.base_model import Base
@@ -32,15 +32,16 @@ class DBStorage:
         """This method creates the engine, the engine must be linked
         to the MySQL database and user created in previus tasks
         hbnb_dev and hbnb_dev_db"""
-        # creating engine using the enviromental variables (retrieving values vía enviromental variables)
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(environ.get("HBNB_MYSQL_USER"),
-                                                                           environ.get(
-                                                                               "HBNB_MYSQL_PWD"),
-                                                                           environ.get(
-                                                                               "HBNB_MYSQL_HOST"),
-                                                                           environ.get("HBNB_MYSQL_DB")),
+        # creating engine using the enviromental variables 
+        # (retrieving values vía enviromental variables)
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(environ.get("HBNB_MYSQL_USER"),
+                                              environ.get("HBNB_MYSQL_PWD"),
+                                              environ.get("HBNB_MYSQL_HOST"),
+                                              environ.get("HBNB_MYSQL_DB")),
                                       pool_pre_ping=True)
-        # avoiding te accidental elimination of data in a production or dev enviroment
+        # avoiding te accidental elimination of data in a production or 
+        # dev enviroment
         if environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all()
 
@@ -91,7 +92,7 @@ class DBStorage:
         self.__session.add(obj)
 
     def save(self):
-        """This method will save the changes to te objects in the current 
+        """This method will save the changes to te objects in the current
         session so this will persist the objects in the database"""
         self.__session.commit()
 
@@ -108,7 +109,8 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         # creating the current session using and bind to the engine
         # Set the parameter expire_on_commit to False
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
         # we need to make sure that our session is thread-safe
         # and make sure that every subprocess works with it's own
         # session instance.
