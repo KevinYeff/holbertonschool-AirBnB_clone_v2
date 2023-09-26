@@ -32,7 +32,7 @@ class DBStorage:
         """This method creates the engine, the engine must be linked
         to the MySQL database and user created in previus tasks
         hbnb_dev and hbnb_dev_db"""
-        # creating engine using the enviromental variables 
+        # creating engine using the enviromental variables
         # (retrieving values vía enviromental variables)
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
                                       .format(environ.get("HBNB_MYSQL_USER"),
@@ -40,7 +40,7 @@ class DBStorage:
                                               environ.get("HBNB_MYSQL_HOST"),
                                               environ.get("HBNB_MYSQL_DB")),
                                       pool_pre_ping=True)
-        # avoiding te accidental elimination of data in a production or 
+        # avoiding te accidental elimination of data in a production or
         # dev enviroment
         if environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all()
